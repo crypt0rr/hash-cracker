@@ -14,6 +14,22 @@ ORTRTA="rules/OneRuleToRuleThemAll.rule"
 pantag="rules/pantagrule.popular.rule"
 williamsuper="rules/williamsuper.rule"
 
+function requirement_checker () {
+    if ! [ -x "$(command -v $HASHCAT)" ]; then
+        echo -e '\e[31m[-]' Hashcat  'is not installed or not in path (/usr/local/bin/hashcat)\e[0m'; ((COUNTER=COUNTER + 1))
+    else
+        echo -e '\e[32m[+]' Hashcat 'is installed\e[0m'
+    fi
+    if [[ -x "common-substr" ]]; then
+        echo -e '\e[32m[+]' 'common-substr is executable\e[0m'
+    else
+        echo -e '\e[31m[-]' 'common-substr is not executable or found\e[0m'; ((COUNTER=COUNTER + 1))
+    fi
+    if [ "$COUNTER" \> 0 ]; then
+		echo -e "\n\e[31mNot all requirements met please fix and try again"; exit 1
+	fi
+}
+
 function selector_hashtype () {
     read -p "Enter hashtype (number): " HASHTYPE
     if [ -z "${HASHTYPE##*[!0-9]*}" ]; then
@@ -83,23 +99,22 @@ function bruteforce_processing () {
 }
 
 function substring_processing () {
-    if [ -f "common-substr" ]; then
-        if [ -f "final.txt" ]; then
-            cat final.txt | cut -d ':' -f2 | sort | tee tmp_passwords &>/dev/null && ./common-substr -n -f tmp_passwords > tmp_allsubstrings && rm tmp_passwords
-            $HASHCAT -O -m$HASHTYPE $HASHLIST -a1 tmp_allsubstrings tmp_allsubstrings
-            $HASHCAT -O -m$HASHTYPE $HASHLIST --show > final.txt
-            rm tmp_allsubstrings; echo -e "\nSubstring processing done, results can be found in \e[32mfinal.txt\e[0m\n"; main
-        else
-            echo -e "\e[31mFile 'final.txt' does not exist, please use option 1 first and try again\e[0m\n"; main
-        fi
+    if [ -f "final.txt" ]; then
+        cat final.txt | cut -d ':' -f2 | sort | tee tmp_passwords &>/dev/null && ./common-substr -n -f tmp_passwords > tmp_allsubstrings && rm tmp_passwords
+        $HASHCAT -O -m$HASHTYPE $HASHLIST -a1 tmp_allsubstrings tmp_allsubstrings
+        $HASHCAT -O -m$HASHTYPE $HASHLIST --show > final.txt
+        rm tmp_allsubstrings; echo -e "\nSubstring processing done, results can be found in \e[32mfinal.txt\e[0m\n"; main
     else
-        echo -e "\e[31mFile 'common-substr' does not exist, try again\n\e[0m"; main
+        echo -e "\e[31mFile 'final.txt' does not exist, please use option 1 first and try again\e[0m\n"; main
     fi
 }
 
 function main () {
-    echo "Hashprocessor v0.1 by crypt0rr"
-    echo "0. Exit"
+    echo -e "Hash-cracker v0.1 by crypt0rr\n"
+    echo "Checking if requirements are met:"
+    requirement_checker
+    
+    echo -e "\n0. Exit"
     echo "1. Default processing"
     echo "2. Default brute force"    
     echo "8. Common substring processing (requires step 1 or 2)"
