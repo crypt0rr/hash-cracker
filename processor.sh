@@ -77,7 +77,7 @@ function bruteforce_processing () {
     $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?a?a'
     $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?a?a?a'
     $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?a?a?a?a'
-    $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?a?a?a?a?a'
+    $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?a?a?a?a?a' --increment
     $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?l?l?l?l?l?l?l?l' --increment
     $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?u?u?u?u?u?u?u?u' --increment
     $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?1?1?1?1?2?2?2?2' -1 '?l?u' -2 '?d' --increment
