@@ -13,6 +13,7 @@ hob064="rules/hob064.rule"
 ORTRTA="rules/OneRuleToRuleThemAll.rule"
 pantag="rules/pantagrule.popular.rule"
 williamsuper="rules/williamsuper.rule"
+RULELIST=($ORTRTA $d3ad0ne $d3adhob0 $generated2 $digits1 $digits2 $digits3 $dive $hob064 $pantag $williamsuper)
 
 function requirement_checker () {
     if ! [ -x "$(command -v $HASHCAT)" ]; then
@@ -58,32 +59,10 @@ function selector_wordlist () {
 }
 
 function default_processing () {
-    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST
-    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST -r $ORTRTA
-    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST -r $d3ad0ne
-    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST -r $d3adhob0
-    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST -r $generated2
-    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST -r $digits1
-    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST -r $digits2
-    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST -r $digits3
-    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST -r $dive
-    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST -r $hob064
-    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST -r $pantag
-    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST -r $williamsuper
-    read -p "How much iterations should be performed over the current results with all rules: " ITERATIONS
-    for i in {1..$ITERATIONS}; do $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort | uniq | tee tmp_pwonly &>/dev/null; $HASHCAT -O -m$HASHTYPE $HASHLIST tmp_pwonly -r $ORTRTA; done
-    for i in {1..$ITERATIONS}; do $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort | uniq | tee tmp_pwonly &>/dev/null; $HASHCAT -O -m$HASHTYPE $HASHLIST tmp_pwonly -r $d3ad0ne; done
-    for i in {1..$ITERATIONS}; do $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort | uniq | tee tmp_pwonly &>/dev/null; $HASHCAT -O -m$HASHTYPE $HASHLIST tmp_pwonly -r $d3adhob0; done
-    for i in {1..$ITERATIONS}; do $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort | uniq | tee tmp_pwonly &>/dev/null; $HASHCAT -O -m$HASHTYPE $HASHLIST tmp_pwonly -r $generated2; done
-    for i in {1..$ITERATIONS}; do $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort | uniq | tee tmp_pwonly &>/dev/null; $HASHCAT -O -m$HASHTYPE $HASHLIST tmp_pwonly -r $digits1; done
-    for i in {1..$ITERATIONS}; do $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort | uniq | tee tmp_pwonly &>/dev/null; $HASHCAT -O -m$HASHTYPE $HASHLIST tmp_pwonly -r $digits2; done
-    for i in {1..$ITERATIONS}; do $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort | uniq | tee tmp_pwonly &>/dev/null; $HASHCAT -O -m$HASHTYPE $HASHLIST tmp_pwonly -r $digits3; done
-    for i in {1..$ITERATIONS}; do $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort | uniq | tee tmp_pwonly &>/dev/null; $HASHCAT -O -m$HASHTYPE $HASHLIST tmp_pwonly -r $dive; done
-    for i in {1..$ITERATIONS}; do $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort | uniq | tee tmp_pwonly &>/dev/null; $HASHCAT -O -m$HASHTYPE $HASHLIST tmp_pwonly -r $hob064; done
-    for i in {1..$ITERATIONS}; do $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort | uniq | tee tmp_pwonly &>/dev/null; $HASHCAT -O -m$HASHTYPE $HASHLIST tmp_pwonly -r $pantag; done
-    for i in {1..$ITERATIONS}; do $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort | uniq | tee tmp_pwonly &>/dev/null; $HASHCAT -O -m$HASHTYPE $HASHLIST tmp_pwonly -r $williamsuper; done
+    for RULE in ${RULELIST[*]}; do
+        $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST -r $RULE
+    done
 
-    rm tmp_output tmp_pwonly
     $HASHCAT -O -m$HASHTYPE $HASHLIST --show > final.txt
     echo -e "\nDefault processing done, results can be found in \e[32mfinal.txt\e[0m\n"; main
 }
@@ -98,27 +77,43 @@ function bruteforce_processing () {
     echo -e "\Brute force processing done, results can be found in \e[32mfinal.txt\e[0m\n"; main
 }
 
+function iterate_processing () {
+    for RULE in ${RULELIST[*]}; do
+        $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort -u | tee tmp_pwonly &>/dev/null; rm tmp_output
+        $HASHCAT -O -m$HASHTYPE $HASHLIST tmp_pwonly -r $RULE
+    done
+    rm tmp_pwonly
+    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > final.txt
+    echo -e "\nIteration results done, results can be found in \e[32mfinal.txt\e[0m\n"; main
+}
+
 function substring_processing () {
-    if [ -f "final.txt" ]; then
-        cat final.txt | cut -d ':' -f2 | sort | tee tmp_passwords &>/dev/null && ./common-substr -n -f tmp_passwords > tmp_allsubstrings && rm tmp_passwords
-        $HASHCAT -O -m$HASHTYPE $HASHLIST -a1 tmp_allsubstrings tmp_allsubstrings
-        $HASHCAT -O -m$HASHTYPE $HASHLIST --show > final.txt
-        rm tmp_allsubstrings; echo -e "\nSubstring processing done, results can be found in \e[32mfinal.txt\e[0m\n"; main
-    else
-        echo -e "\e[31mFile 'final.txt' does not exist, please use option 1 first and try again\e[0m\n"; main
-    fi
+    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > final.txt
+    cat final.txt | cut -d ':' -f2 | sort | tee tmp_passwords &>/dev/null && ./common-substr -n -f tmp_passwords > tmp_allsubstrings && rm tmp_passwords
+    $HASHCAT -O -m$HASHTYPE $HASHLIST -a1 tmp_allsubstrings tmp_allsubstrings
+    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > final.txt
+    rm tmp_allsubstrings; echo -e "\nSubstring processing done, results can be found in \e[32mfinal.txt\e[0m\n"; main
+}
+
+function results_processing () {
+    echo "Total uniq hashes used as input:" $(cat $HASHLIST | sort -u | wc -l | cut -d ' ' -f1)
+    echo "Total uniq hashes cracked:" $($HASHCAT -O -m$HASHTYPE $HASHLIST --show | tee results_cracked.txt | wc -l)
+    echo "Total uniq hashes that are left:" $($HASHCAT -O -m$HASHTYPE $HASHLIST --left | tee results_lefts.txt | wc -l)
+    cat results_cracked.txt | cut -d ':' -f2 | sort | tee results_clears.txt &>/dev/null
+    echo -e "\nResult processing done, results can be found in \e[32mresults_cracked.txt, results_lefts.txt and results_clears.txt\e[0m\n"; main
 }
 
 function main () {
-    echo -e "Hash-cracker v0.1 by crypt0rr\n"
+    echo -e "Hash-cracker v0.2 by crypt0rr\n"
     echo "Checking if requirements are met:"
     requirement_checker
     
     echo -e "\n0. Exit"
     echo "1. Default processing"
-    echo "2. Default brute force"    
-    echo "8. Common substring processing (requires step 1 or 2)"
-    echo "9. Bypass; to use option 8 with own password list, final.txt required"
+    echo "2. Default brute force"
+    echo "3. Iterate gathered results again"
+    echo "4. Common substring processing (advise: first run step 1, 2 and/or 3)"
+    echo "9. Show results in usable format"
     read -p "Please enter number: " START
 	if [[ $START = '0' ]]; then
 		echo "Bye..."; exit 1
@@ -126,10 +121,12 @@ function main () {
 		selector_hashtype; selector_hashlist; selector_wordlist; default_processing
     elif [[ $START = '2' ]]; then
         selector_hashtype; selector_hashlist; bruteforce_processing
-    elif [[ $START = '8' ]]; then
-        substring_processing
-    elif [[ $START = '9' ]]; then
+    elif [[ $START = '3' ]]; then
+        selector_hashtype; selector_hashlist; iterate_processing
+    elif [[ $START = '4' ]]; then
         selector_hashtype; selector_hashlist; substring_processing
+    elif [[ $START = '9' ]]; then
+        selector_hashtype; selector_hashlist; results_processing
     else
 		echo -e "\e[31mNot valid, try again\n\e[0m"; main
 	fi
