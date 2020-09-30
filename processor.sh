@@ -62,9 +62,7 @@ function default_processing () {
     for RULE in ${RULELIST[*]}; do
         $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST -r $RULE
     done
-
-    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > final.txt
-    echo -e "\nDefault processing done, results can be found in \e[32mfinal.txt\e[0m\n"; main
+    echo -e "\n\e[32mDefault processing done\e[0m\n"; main
 }
 
 function bruteforce_processing () {
@@ -73,8 +71,7 @@ function bruteforce_processing () {
     $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?u?u?u?u?u?u?u?u' --increment
     $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?1?1?1?1?2?2?2?2' -1 '?l?u' -2 '?d' --increment
     $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?1?1?1?1?2?2?2?2' -1 '?d' -2 '?l?u' --increment
-    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > final.txt
-    echo -e "\Brute force processing done, results can be found in \e[32mfinal.txt\e[0m\n"; main
+    echo -e "\n\e[32mBrute force processing done\e[0m\n"; main
 }
 
 function iterate_processing () {
@@ -83,16 +80,14 @@ function iterate_processing () {
         $HASHCAT -O -m$HASHTYPE $HASHLIST tmp_pwonly -r $RULE
     done
     rm tmp_pwonly
-    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > final.txt
-    echo -e "\nIteration results done, results can be found in \e[32mfinal.txt\e[0m\n"; main
+    echo -e "\n\e[32mIteration processing done\e[0m\n"; main
 }
 
 function substring_processing () {
-    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > final.txt
-    cat final.txt | cut -d ':' -f2 | sort | tee tmp_passwords &>/dev/null && ./common-substr -n -f tmp_passwords > tmp_allsubstrings && rm tmp_passwords
+    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_substring
+    cat tmp_substring | cut -d ':' -f2 | sort | tee tmp_passwords &>/dev/null && ./common-substr -n -f tmp_passwords > tmp_allsubstrings && rm tmp_passwords tmp_substring
     $HASHCAT -O -m$HASHTYPE $HASHLIST -a1 tmp_allsubstrings tmp_allsubstrings
-    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > final.txt
-    rm tmp_allsubstrings; echo -e "\nSubstring processing done, results can be found in \e[32mfinal.txt\e[0m\n"; main
+    rm tmp_allsubstrings; echo -e "\n\e[32mSubstring processing done\e[0m\n"; main
 }
 
 function results_processing () {

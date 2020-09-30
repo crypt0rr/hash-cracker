@@ -14,3 +14,4 @@ Simple script to get some hash cracking done effectively.
 * Requirements checker
 * Iterations of results put into a separate function
 * Added function for result processing / output
+* Results to final.txt removed, must now use option to show results
