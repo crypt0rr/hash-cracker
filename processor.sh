@@ -59,6 +59,7 @@ function selector_wordlist () {
 }
 
 function default_processing () {
+    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST
     for RULE in ${RULELIST[*]}; do
         $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST -r $RULE
     done
