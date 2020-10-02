@@ -27,8 +27,8 @@ function requirement_checker () {
         echo -e '\e[31m[-]' 'common-substr is not executable or found\e[0m'; ((COUNTER=COUNTER + 1))
     fi
     if [ "$COUNTER" \> 0 ]; then
-		echo -e "\n\e[31mNot all requirements met please fix and try again"; exit 1
-	fi
+        echo -e "\n\e[31mNot all requirements met please fix and try again"; exit 1
+    fi
 }
 
 function selector_hashtype () {
@@ -111,10 +111,10 @@ function main () {
     echo "4. Common substring processing (advise: first run step 1, 2 and/or 3)"
     echo "9. Show results in usable format"
     read -p "Please enter number: " START
-	if [[ $START = '0' ]]; then
-		echo "Bye..."; exit 1
-	elif [[ $START = '1' ]]; then
-		selector_hashtype; selector_hashlist; selector_wordlist; default_processing
+    if [[ $START = '0' ]]; then
+        echo "Bye..."; exit 1
+    elif [[ $START = '1' ]]; then
+        selector_hashtype; selector_hashlist; selector_wordlist; default_processing
     elif [[ $START = '2' ]]; then
         selector_hashtype; selector_hashlist; bruteforce_processing
     elif [[ $START = '3' ]]; then
@@ -124,8 +124,8 @@ function main () {
     elif [[ $START = '9' ]]; then
         selector_hashtype; selector_hashlist; results_processing
     else
-		echo -e "\e[31mNot valid, try again\n\e[0m"; main
-	fi
+        echo -e "\e[31mNot valid, try again\n\e[0m"; main
+    fi
 }
 
 main
