@@ -19,3 +19,4 @@ Simple script to get some hash cracking done effectively.
 ### v0.3 - Added plain processing
 
 * Added the ability to process a plain word/password list against input hashes
+* Added tab completion for hashlist and wordlist selector

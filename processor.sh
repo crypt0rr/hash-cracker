@@ -41,7 +41,7 @@ function selector_hashtype () {
 }
 
 function selector_hashlist () {
-    read -p "Enter full path to hashlist: " HASHLIST
+    read -e -p "Enter full path to hashlist: " HASHLIST
     if [ -f "$HASHLIST" ]; then
         echo "Hashlist" $HASHLIST "selected."
     else
@@ -50,7 +50,7 @@ function selector_hashlist () {
 }
 
 function selector_wordlist () {
-    read -p "Enter full path to wordlist: " WORDLIST
+    read -e -p "Enter full path to wordlist: " WORDLIST
     if [ -f "$WORDLIST" ]; then
         echo "Wordlist" $WORDLIST "selected."
     else
