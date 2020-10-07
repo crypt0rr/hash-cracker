@@ -84,13 +84,6 @@ function iterate_processing () {
     echo -e "\n\e[32mIteration processing done\e[0m\n"; main
 }
 
-function substring_processing () {
-    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_substring
-    cat tmp_substring | cut -d ':' -f2 | sort | tee tmp_passwords &>/dev/null && ./common-substr -n -f tmp_passwords > tmp_allsubstrings && rm tmp_passwords tmp_substring
-    $HASHCAT -O -m$HASHTYPE $HASHLIST -a1 tmp_allsubstrings tmp_allsubstrings
-    rm tmp_allsubstrings; echo -e "\n\e[32mSubstring processing done\e[0m\n"; main
-}
-
 function results_processing () {
     echo "Total uniq hashes used as input:" $(cat $HASHLIST | sort -u | wc -l | cut -d ' ' -f1)
     echo "Total uniq hashes cracked:" $($HASHCAT -O -m$HASHTYPE $HASHLIST --show | tee results_cracked.txt | wc -l)
@@ -99,8 +92,20 @@ function results_processing () {
     echo -e "\nResult processing done, results can be found in \e[32mresults_cracked.txt, results_lefts.txt and results_clears.txt\e[0m\n"; main
 }
 
+function substring_processing () {
+    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_substring
+    cat tmp_substring | cut -d ':' -f2 | sort | tee tmp_passwords &>/dev/null && ./common-substr -n -f tmp_passwords > tmp_allsubstrings && rm tmp_passwords tmp_substring
+    $HASHCAT -O -m$HASHTYPE $HASHLIST -a1 tmp_allsubstrings tmp_allsubstrings
+    rm tmp_allsubstrings; echo -e "\n\e[32mSubstring processing done\e[0m\n"; main
+}
+
+function plain_processing () {
+    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST
+    echo -e "\n\e[32mPlain processing done\e[0m\n"; main
+}
+
 function main () {
-    echo -e "Hash-cracker v0.2 by crypt0rr\n"
+    echo -e "Hash-cracker v0.3 by crypt0rr\n"
     echo "Checking if requirements are met:"
     requirement_checker
     
@@ -109,6 +114,7 @@ function main () {
     echo "2. Default brute force"
     echo "3. Iterate gathered results again"
     echo "4. Common substring processing (advise: first run step 1, 2 and/or 3)"
+    echo "5. Just plain word/password list against hashes"
     echo "9. Show results in usable format"
     read -p "Please enter number: " START
     if [[ $START = '0' ]]; then
@@ -121,6 +127,8 @@ function main () {
         selector_hashtype; selector_hashlist; iterate_processing
     elif [[ $START = '4' ]]; then
         selector_hashtype; selector_hashlist; substring_processing
+    elif [[ $START = '5' ]]; then
+        selector_hashtype; selector_hashlist; selector_wordlist; plain_processing
     elif [[ $START = '9' ]]; then
         selector_hashtype; selector_hashlist; results_processing
     else

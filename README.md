@@ -15,3 +15,7 @@ Simple script to get some hash cracking done effectively.
 * Iterations of results put into a separate function
 * Added function for result processing / output
 * Results to final.txt removed, must now use option to show results
+
+### v0.3 - Added plain processing
+
+* Added the ability to process a plain word/password list against input hashes
