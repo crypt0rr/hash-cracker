@@ -20,3 +20,7 @@ Simple script to get some hash cracking done effectively.
 
 * Added the ability to process a plain word/password list against input hashes
 * Added tab completion for hashlist and wordlist selector
+
+## License
+
+MIT
