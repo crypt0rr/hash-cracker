@@ -105,6 +105,7 @@ function plain_processing () {
 
 function hybrid_processing () {
     $HASHCAT -O -m$HASHTYPE $HASHLIST -a6 $WORDLIST -j c '?s?d?d?d?d' -i
+    $HASHCAT -O -m$HASHTYPE $HASHLIST -a6 $WORDLIST -j c '?d?d?d?d?s' -i
     echo -e "\n\e[32mHybrid processing done\e[0m\n"; main
 }
 
