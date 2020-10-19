@@ -2,6 +2,11 @@
 
 Simple script to get some hash cracking done effectively.
 
+Some sites where you can find wordlists:
+
+* <https://hashes.org/>
+* <https://weakpass.com/>
+
 ## Version log
 
 ### v0.1 - Initial release
@@ -20,6 +25,11 @@ Simple script to get some hash cracking done effectively.
 
 * Added the ability to process a plain word/password list against input hashes
 * Added tab completion for hashlist and wordlist selector
+
+### v0.4 - Added Hybrid attack
+
+* Added hybrid attack support
+* Removed line for uniq hashes output because not showing correct numbers depending on input
 
 ## License
 

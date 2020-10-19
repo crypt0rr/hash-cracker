@@ -85,7 +85,6 @@ function iterate_processing () {
 }
 
 function results_processing () {
-    echo "Total uniq hashes used as input:" $(cat $HASHLIST | sort -u | wc -l | cut -d ' ' -f1)
     echo "Total uniq hashes cracked:" $($HASHCAT -O -m$HASHTYPE $HASHLIST --show | tee results_cracked.txt | wc -l)
     echo "Total uniq hashes that are left:" $($HASHCAT -O -m$HASHTYPE $HASHLIST --left | tee results_lefts.txt | wc -l)
     cat results_cracked.txt | cut -d ':' -f2 | sort | tee results_clears.txt &>/dev/null
@@ -104,8 +103,13 @@ function plain_processing () {
     echo -e "\n\e[32mPlain processing done\e[0m\n"; main
 }
 
+function hybrid_processing () {
+    $HASHCAT -O -m$HASHTYPE $HASHLIST -a6 $WORDLIST -j c '?s?d?d?d?d' -i
+    echo -e "\n\e[32mHybrid processing done\e[0m\n"; main
+}
+
 function main () {
-    echo -e "Hash-cracker v0.3 by crypt0rr\n"
+    echo -e "Hash-cracker v0.4 by crypt0rr\n"
     echo "Checking if requirements are met:"
     requirement_checker
     
@@ -115,6 +119,7 @@ function main () {
     echo "3. Iterate gathered results again"
     echo "4. Common substring processing (advise: first run step 1, 2 and/or 3)"
     echo "5. Just plain word/password list against hashes"
+    echo "6. Hybrid processing"
     echo "9. Show results in usable format"
     read -p "Please enter number: " START
     if [[ $START = '0' ]]; then
@@ -129,6 +134,8 @@ function main () {
         selector_hashtype; selector_hashlist; substring_processing
     elif [[ $START = '5' ]]; then
         selector_hashtype; selector_hashlist; selector_wordlist; plain_processing
+    elif [[ $START = '6' ]]; then
+        selector_hashtype; selector_hashlist; selector_wordlist; hybrid_processing        
     elif [[ $START = '9' ]]; then
         selector_hashtype; selector_hashlist; results_processing
     else
