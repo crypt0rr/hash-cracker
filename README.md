@@ -30,6 +30,7 @@ Some sites where you can find wordlists:
 
 * Added hybrid attack support
 * Removed line for uniq hashes output because not showing correct numbers depending on input
+* Reordered start menu
 
 ## License
 

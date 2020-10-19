@@ -117,9 +117,9 @@ function main () {
     echo "1. Default processing"
     echo "2. Default brute force"
     echo "3. Iterate gathered results again"
-    echo "4. Common substring processing (advise: first run step 1, 2 and/or 3)"
-    echo "5. Just plain word/password list against hashes"
-    echo "6. Hybrid processing"
+    echo "4. Just plain word/password list against hashes"
+    echo "5. Hybrid processing"
+    echo "8. Common substring processing (advise: first run steps above)"
     echo "9. Show results in usable format"
     read -p "Please enter number: " START
     if [[ $START = '0' ]]; then
@@ -131,11 +131,11 @@ function main () {
     elif [[ $START = '3' ]]; then
         selector_hashtype; selector_hashlist; iterate_processing
     elif [[ $START = '4' ]]; then
-        selector_hashtype; selector_hashlist; substring_processing
-    elif [[ $START = '5' ]]; then
         selector_hashtype; selector_hashlist; selector_wordlist; plain_processing
-    elif [[ $START = '6' ]]; then
+    elif [[ $START = '5' ]]; then
         selector_hashtype; selector_hashlist; selector_wordlist; hybrid_processing        
+    elif [[ $START = '8' ]]; then
+        selector_hashtype; selector_hashlist; substring_processing
     elif [[ $START = '9' ]]; then
         selector_hashtype; selector_hashlist; results_processing
     else
