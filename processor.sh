@@ -16,7 +16,7 @@ pantag="rules/pantagrule.popular.rule"
 williamsuper="rules/williamsuper.rule"
 toggles1="rules/toggles1.rule"
 toggles2="rules/toggles2.rule"
-RULELIST=($ORTRTA $d3ad0ne $d3adhob0 $generated2 $digits1 $digits2 $digits3 $dive $hob064 $leetspeak $pantag $williamsuper $toggles1 $toggles2 $toggles3 $toggles4)
+RULELIST=($ORTRTA $d3ad0ne $d3adhob0 $generated2 $digits1 $digits2 $digits3 $dive $hob064 $leetspeak $pantag $williamsuper $toggles1 $toggles2)
 SMALLRULELIST=($digits1 $digits2 $hob064 $leetspeak)
 
 function requirement_checker () {
@@ -83,7 +83,7 @@ function bruteforce_processing () {
 
 function iterate_processing () {
     for RULE in ${RULELIST[*]}; do
-        $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort -u | tee tmp_pwonly &>/dev/null; rm tmp_output
+        $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort -u | tee tmp_pwonly &>/dev/null; rm tmp_output
         $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST tmp_pwonly -r $RULE
     done
     rm tmp_pwonly
@@ -98,7 +98,7 @@ function results_processing () {
 }
 
 function substring_processing () {
-    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST --show > tmp_substring
+    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_substring
     cat tmp_substring | cut -d ':' -f2 | sort | tee tmp_passwords &>/dev/null && ./common-substr -n -f tmp_passwords > tmp_allsubstrings && rm tmp_passwords tmp_substring
     $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a1 tmp_allsubstrings tmp_allsubstrings
     rm tmp_allsubstrings; echo -e "\n\e[32mSubstring processing done\e[0m\n"; main
