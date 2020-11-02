@@ -10,10 +10,14 @@ digits3="rules/digits3.rule"
 dive="rules/dive.rule"
 generated2="rules/generated2.rule"
 hob064="rules/hob064.rule"
+leetspeak="rules/leetspeak.rule"
 ORTRTA="rules/OneRuleToRuleThemAll.rule"
 pantag="rules/pantagrule.popular.rule"
 williamsuper="rules/williamsuper.rule"
-RULELIST=($ORTRTA $d3ad0ne $d3adhob0 $generated2 $digits1 $digits2 $digits3 $dive $hob064 $pantag $williamsuper)
+toggles1="rules/toggles1.rule"
+toggles2="rules/toggles2.rule"
+RULELIST=($ORTRTA $d3ad0ne $d3adhob0 $generated2 $digits1 $digits2 $digits3 $dive $hob064 $leetspeak $pantag $williamsuper $toggles1 $toggles2 $toggles3 $toggles4)
+SMALLRULELIST=($digits1 $digits2 $hob064 $leetspeak)
 
 function requirement_checker () {
     if ! [ -x "$(command -v $HASHCAT)" ]; then
@@ -59,26 +63,28 @@ function selector_wordlist () {
 }
 
 function default_processing () {
-    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST
+    $HASHCAT -O  --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST
     for RULE in ${RULELIST[*]}; do
-        $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST -r $RULE
+        $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST -r $RULE
     done
     echo -e "\n\e[32mDefault processing done\e[0m\n"; main
 }
 
 function bruteforce_processing () {
-    $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?a?a?a?a?a' --increment
-    $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?l?l?l?l?l?l?l?l' --increment
-    $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?u?u?u?u?u?u?u?u' --increment
-    $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?1?1?1?1?2?2?2?2' -1 '?l?u' -2 '?d' --increment
-    $HASHCAT -O -m$HASHTYPE $HASHLIST -a3 '?1?1?1?1?2?2?2?2' -1 '?d' -2 '?l?u' --increment
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?a?a?a?a?a' --increment
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?l?l?l?l?l?l?l?l' --increment
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?u?u?u?u?u?u?u?u' --increment
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?d?d?d?d?d?d?d?d' --increment
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?1?1?1?1?1?1?1' -1 '?l?d?u' --increment
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?1?1?1?1?2?2?2?2' -1 '?l?u' -2 '?d' --increment
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?1?1?1?1?2?2?2?2' -1 '?d' -2 '?l?u' --increment
     echo -e "\n\e[32mBrute force processing done\e[0m\n"; main
 }
 
 function iterate_processing () {
     for RULE in ${RULELIST[*]}; do
-        $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort -u | tee tmp_pwonly &>/dev/null; rm tmp_output
-        $HASHCAT -O -m$HASHTYPE $HASHLIST tmp_pwonly -r $RULE
+        $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort -u | tee tmp_pwonly &>/dev/null; rm tmp_output
+        $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST tmp_pwonly -r $RULE
     done
     rm tmp_pwonly
     echo -e "\n\e[32mIteration processing done\e[0m\n"; main
@@ -92,26 +98,34 @@ function results_processing () {
 }
 
 function substring_processing () {
-    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_substring
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST --show > tmp_substring
     cat tmp_substring | cut -d ':' -f2 | sort | tee tmp_passwords &>/dev/null && ./common-substr -n -f tmp_passwords > tmp_allsubstrings && rm tmp_passwords tmp_substring
-    $HASHCAT -O -m$HASHTYPE $HASHLIST -a1 tmp_allsubstrings tmp_allsubstrings
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a1 tmp_allsubstrings tmp_allsubstrings
     rm tmp_allsubstrings; echo -e "\n\e[32mSubstring processing done\e[0m\n"; main
 }
 
 function plain_processing () {
-    $HASHCAT -O -m$HASHTYPE $HASHLIST $WORDLIST
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST
     echo -e "\n\e[32mPlain processing done\e[0m\n"; main
 }
 
 function hybrid_processing () {
-    $HASHCAT -O -m$HASHTYPE $HASHLIST -a6 $WORDLIST -j c '?s?d?d?d?d' -i
-    $HASHCAT -O -m$HASHTYPE $HASHLIST -a6 $WORDLIST -j c '?d?d?d?d?s' -i
-    $HASHCAT -O -m$HASHTYPE $HASHLIST -a6 $WORDLIST -j c '?a?a' -i
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a6 $WORDLIST -j c '?s?d?d?d?d' -i
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a6 $WORDLIST -j c '?d?d?d?d?s' -i
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a6 $WORDLIST -j c '?a?a' -i
     echo -e "\n\e[32mHybrid processing done\e[0m\n"; main
 }
 
+function toggle_processing () {
+    for RULE in ${SMALLRULELIST[*]}; do
+        $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST -r $toggles1 -r $RULE
+        $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST -r $toggles2 -r $RULE
+    done
+    echo -e "\n\e[32mToggle processing done\e[0m\n"; main
+}
+
 function main () {
-    echo -e "Hash-cracker v0.4 by crypt0rr\n"
+    echo -e "Hash-cracker v0.5 by crypt0rr\n"
     echo "Checking if requirements are met:"
     requirement_checker
     
@@ -121,6 +135,7 @@ function main () {
     echo "3. Iterate gathered results again"
     echo "4. Just plain word/password list against hashes"
     echo "5. Hybrid processing"
+    echo "6. Toggle-case processing"
     echo "8. Common substring processing (advise: first run steps above)"
     echo "9. Show results in usable format"
     read -p "Please enter number: " START
@@ -135,7 +150,9 @@ function main () {
     elif [[ $START = '4' ]]; then
         selector_hashtype; selector_hashlist; selector_wordlist; plain_processing
     elif [[ $START = '5' ]]; then
-        selector_hashtype; selector_hashlist; selector_wordlist; hybrid_processing        
+        selector_hashtype; selector_hashlist; selector_wordlist; hybrid_processing
+    elif [[ $START = '6' ]]; then
+        selector_hashtype; selector_hashlist; selector_wordlist; toggle_processing
     elif [[ $START = '8' ]]; then
         selector_hashtype; selector_hashlist; substring_processing
     elif [[ $START = '9' ]]; then

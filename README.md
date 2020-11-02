@@ -32,6 +32,14 @@ Some sites where you can find wordlists:
 * Removed line for uniq hashes output because not showing correct numbers depending on input
 * Reordered start menu
 
+### v0.5 - Added Toggle-Case attack
+
+* Adjusted default bitmap-max size to 24
+* Added two bruteforce defaults
+* Added the following rules (leetspeak, toggles1, toggles2)
+* Added new rules to default processing job
+* Added basic Toggle-Case attack
+
 ## License
 
 MIT
