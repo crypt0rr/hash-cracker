@@ -40,6 +40,11 @@ Some sites where you can find wordlists:
 * Added new rules to default processing job
 * Added basic Toggle-Case attack
 
+### v0.6 - Added Prefix and suffix
+
+* Implemented prefix and suffix processing
+* Reordered some functions
+
 ## License
 
 MIT

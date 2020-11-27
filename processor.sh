@@ -90,20 +90,6 @@ function iterate_processing () {
     echo -e "\n\e[32mIteration processing done\e[0m\n"; main
 }
 
-function results_processing () {
-    echo "Total uniq hashes cracked:" $($HASHCAT -O -m$HASHTYPE $HASHLIST --show | tee results_cracked.txt | wc -l)
-    echo "Total uniq hashes that are left:" $($HASHCAT -O -m$HASHTYPE $HASHLIST --left | tee results_lefts.txt | wc -l)
-    cat results_cracked.txt | cut -d ':' -f2 | sort | tee results_clears.txt &>/dev/null
-    echo -e "\nResult processing done, results can be found in \e[32mresults_cracked.txt, results_lefts.txt and results_clears.txt\e[0m\n"; main
-}
-
-function substring_processing () {
-    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_substring
-    cat tmp_substring | cut -d ':' -f2 | sort | tee tmp_passwords &>/dev/null && ./common-substr -n -f tmp_passwords > tmp_allsubstrings && rm tmp_passwords tmp_substring
-    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a1 tmp_allsubstrings tmp_allsubstrings
-    rm tmp_allsubstrings; echo -e "\n\e[32mSubstring processing done\e[0m\n"; main
-}
-
 function plain_processing () {
     $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST
     echo -e "\n\e[32mPlain processing done\e[0m\n"; main
@@ -124,8 +110,29 @@ function toggle_processing () {
     echo -e "\n\e[32mToggle processing done\e[0m\n"; main
 }
 
+function prefixsuffix_processing () {
+    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_prefixsuffix
+    cat tmp_prefixsuffix | cut -d ':' -f2 | sort | tee tmp_passwords &>/dev/null && ./common-substr -n -p -f tmp_passwords > tmp_prefix && ./common-substr -n -s -f tmp_passwords > tmp_suffix && rm tmp_passwords tmp_prefixsuffix
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a1 tmp_suffix tmp_prefix
+    rm tmp_suffix tmp_prefix; echo -e "\n\e[32mPrefix suffix processing done\e[0m\n"; main
+}
+
+function substring_processing () {
+    $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_substring
+    cat tmp_substring | cut -d ':' -f2 | sort | tee tmp_passwords &>/dev/null && ./common-substr -n -f tmp_passwords > tmp_allsubstrings && rm tmp_passwords tmp_substring
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a1 tmp_allsubstrings tmp_allsubstrings
+    rm tmp_allsubstrings; echo -e "\n\e[32mSubstring processing done\e[0m\n"; main
+}
+
+function results_processing () {
+    echo "Total uniq hashes cracked:" $($HASHCAT -O -m$HASHTYPE $HASHLIST --show | tee results_cracked.txt | wc -l)
+    echo "Total uniq hashes that are left:" $($HASHCAT -O -m$HASHTYPE $HASHLIST --left | tee results_lefts.txt | wc -l)
+    cat results_cracked.txt | cut -d ':' -f2 | sort | tee results_clears.txt &>/dev/null
+    echo -e "\nResult processing done, results can be found in \e[32mresults_cracked.txt, results_lefts.txt and results_clears.txt\e[0m\n"; main
+}
+
 function main () {
-    echo -e "Hash-cracker v0.5 by crypt0rr\n"
+    echo -e "Hash-cracker v0.6 by crypt0rr\n"
     echo "Checking if requirements are met:"
     requirement_checker
     
@@ -136,6 +143,7 @@ function main () {
     echo "4. Just plain word/password list against hashes"
     echo "5. Hybrid processing"
     echo "6. Toggle-case processing"
+    echo "7. Prefix suffix processing (advise: first run steps above)"
     echo "8. Common substring processing (advise: first run steps above)"
     echo "9. Show results in usable format"
     read -p "Please enter number: " START
@@ -153,6 +161,8 @@ function main () {
         selector_hashtype; selector_hashlist; selector_wordlist; hybrid_processing
     elif [[ $START = '6' ]]; then
         selector_hashtype; selector_hashlist; selector_wordlist; toggle_processing
+    elif [[ $START = '7' ]]; then
+        selector_hashtype; selector_hashlist; prefixsuffix_processing
     elif [[ $START = '8' ]]; then
         selector_hashtype; selector_hashlist; substring_processing
     elif [[ $START = '9' ]]; then
