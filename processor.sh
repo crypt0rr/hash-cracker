@@ -113,8 +113,8 @@ function toggle_processing () {
 function prefixsuffix_processing () {
     $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_prefixsuffix
     cat tmp_prefixsuffix | cut -d ':' -f2 | sort | tee tmp_passwords &>/dev/null && ./common-substr -n -p -f tmp_passwords > tmp_prefix && ./common-substr -n -s -f tmp_passwords > tmp_suffix && rm tmp_passwords tmp_prefixsuffix
-    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a1 tmp_suffix tmp_prefix
-    rm tmp_suffix tmp_prefix; echo -e "\n\e[32mPrefix suffix processing done\e[0m\n"; main
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a1 tmp_prefix tmp_suffix
+    rm tmp_prefix tmp_suffix; echo -e "\n\e[32mPrefix suffix processing done\e[0m\n"; main
 }
 
 function substring_processing () {
