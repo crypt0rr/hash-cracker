@@ -65,7 +65,7 @@ function selector_wordlist () {
 function default_processing () {
     $HASHCAT -O  --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST
     for RULE in ${RULELIST[*]}; do
-        $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST -r $RULE
+        $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST -r $RULE --loopback
     done
     echo -e "\n\e[32mDefault processing done\e[0m\n"; main
 }
@@ -74,7 +74,7 @@ function bruteforce_processing () {
     $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?a?a?a?a?a' --increment
     $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?l?l?l?l?l?l?l?l' --increment
     $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?u?u?u?u?u?u?u?u' --increment
-    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?d?d?d?d?d?d?d?d' --increment
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?d?d?d?d?d?d?d?d?d?d' --increment
     $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?1?1?1?1?1?1?1' -1 '?l?d?u' --increment
     $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?1?1?1?1?2?2?2?2' -1 '?l?u' -2 '?d' --increment
     $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?1?1?1?1?2?2?2?2' -1 '?d' -2 '?l?u' --increment
@@ -84,7 +84,7 @@ function bruteforce_processing () {
 function iterate_processing () {
     for RULE in ${RULELIST[*]}; do
         $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort -u | tee tmp_pwonly &>/dev/null; rm tmp_output
-        $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST tmp_pwonly -r $RULE
+        $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST tmp_pwonly -r $RULE --loopback
     done
     rm tmp_pwonly
     echo -e "\n\e[32mIteration processing done\e[0m\n"; main
@@ -104,8 +104,8 @@ function hybrid_processing () {
 
 function toggle_processing () {
     for RULE in ${SMALLRULELIST[*]}; do
-        $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST -r $toggles1 -r $RULE
-        $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST -r $toggles2 -r $RULE
+        $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST -r $toggles1 -r $RULE --loopback
+        $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST -r $toggles2 -r $RULE --loopback
     done
     echo -e "\n\e[32mToggle processing done\e[0m\n"; main
 }
@@ -133,7 +133,7 @@ function results_processing () {
 }
 
 function main () {
-    echo -e "Hash-cracker v0.6 by crypt0rr\n"
+    echo -e "Hash-cracker v0.7 by crypt0rr\n"
     echo "Checking if requirements are met:"
     requirement_checker
     

@@ -45,6 +45,11 @@ Some sites where you can find wordlists:
 * Implemented prefix and suffix processing
 * Reordered some functions
 
+### v0.7 - Loop the loop
+
+* Added '--loopback' to rule based cracking
+* Extended brute force digits from 8 to 10
+
 ## License
 
 MIT
