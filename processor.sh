@@ -60,6 +60,14 @@ function selector_wordlist () {
     else
         echo -e "\e[31mFile does not exist, try again\e[0m"; selector_wordlist
     fi
+    if [[ $START = '7' ]]; then
+        read -e -p "Enter full path to second wordlist: " WORDLIST2
+        if [ -f "$WORDLIST" ]; then
+        echo "Wordlist" $WORDLIST "selected."
+        else
+            echo -e "\e[31mFile does not exist, try again\e[0m"; selector_wordlist
+        fi
+    fi
 }
 
 function default_processing () {
@@ -110,6 +118,11 @@ function toggle_processing () {
     echo -e "\n\e[32mToggle processing done\e[0m\n"; main
 }
 
+function combinator_processing () {
+    $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a1 $WORDLIST $WORDLIST2
+    echo -e "\n\e[32mCombinator processing done\e[0m\n"; main
+}
+
 function prefixsuffix_processing () {
     $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_prefixsuffix
     cat tmp_prefixsuffix | cut -d ':' -f2 | sort | tee tmp_passwords &>/dev/null && ./common-substr -n -p -f tmp_passwords > tmp_prefix && ./common-substr -n -s -f tmp_passwords > tmp_suffix && rm tmp_passwords tmp_prefixsuffix
@@ -125,6 +138,20 @@ function substring_processing () {
     rm tmp_allsubstrings; echo -e "\n\e[32mSubstring processing done\e[0m\n"; main
 }
 
+function show_info () {
+    echo -e "\nInformation about the modules"
+    echo "1. Default: A wordlist + a set of rules is ran agains the hashlist"
+    echo "2. Brute force: A commonly known set of brute force tasks"
+    echo "3. Iterate results: Iterate gathered results from a previous performed job, advise to run this multiple times after completing other tasks"
+    echo "4. Plain: Just a plain wordlist agains the hashlist, no specials here"
+    echo "5. Hybrid: Wordlist + bruteforce random combined"
+    echo "6. Toggle case: Will toggle chars randomly based on toggle rules and add couple simple rules to create variations"
+    echo "7. Combinator: Will combine two input wordlists to create new passwords"
+    echo "8. Prefix suffix: Will take the already cracked hashes, take the prefix and suffix and put them together in variations"
+    echo "9. Common substring: Will take the common substrings out of the already cracked hashes and create new variations"
+    main
+}
+
 function results_processing () {
     echo "Total uniq hashes cracked:" $($HASHCAT -O -m$HASHTYPE $HASHLIST --show | tee results_cracked.txt | wc -l)
     echo "Total uniq hashes that are left:" $($HASHCAT -O -m$HASHTYPE $HASHLIST --left | tee results_lefts.txt | wc -l)
@@ -133,20 +160,22 @@ function results_processing () {
 }
 
 function main () {
-    echo -e "Hash-cracker v0.7 by crypt0rr\n"
+    echo -e "Hash-cracker v0.8 by crypt0rr\n"
     echo "Checking if requirements are met:"
     requirement_checker
     
     echo -e "\n0. Exit"
-    echo "1. Default processing"
-    echo "2. Default brute force"
-    echo "3. Iterate gathered results again"
-    echo "4. Just plain word/password list against hashes"
-    echo "5. Hybrid processing"
-    echo "6. Toggle-case processing"
-    echo "7. Prefix suffix processing (advise: first run steps above)"
-    echo "8. Common substring processing (advise: first run steps above)"
-    echo "9. Show results in usable format"
+    echo "1. Default"
+    echo "2. Brute force"
+    echo "3. Iterate results"
+    echo "4. Plain"
+    echo "5. Hybrid"
+    echo "6. Toggle-case"
+    echo "7. Combinator"
+    echo "8. Prefix suffix (advise: first run steps above)"
+    echo "9. Common substring (advise: first run steps above)"
+    echo "99. Show info about modules"
+    echo "100. Show results in usable format"
     read -p "Please enter number: " START
     if [[ $START = '0' ]]; then
         echo "Bye..."; exit 1
@@ -163,10 +192,14 @@ function main () {
     elif [[ $START = '6' ]]; then
         selector_hashtype; selector_hashlist; selector_wordlist; toggle_processing
     elif [[ $START = '7' ]]; then
-        selector_hashtype; selector_hashlist; prefixsuffix_processing
+        selector_hashtype; selector_hashlist; selector_wordlist; combinator_processing
     elif [[ $START = '8' ]]; then
-        selector_hashtype; selector_hashlist; substring_processing
+        selector_hashtype; selector_hashlist; prefixsuffix_processing
     elif [[ $START = '9' ]]; then
+        selector_hashtype; selector_hashlist; substring_processing
+    elif [[ $START = '99' ]]; then
+        show_info    
+    elif [[ $START = '100' ]]; then
         selector_hashtype; selector_hashlist; results_processing
     else
         echo -e "\e[31mNot valid, try again\n\e[0m"; main

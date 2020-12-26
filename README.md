@@ -50,6 +50,12 @@ Some sites where you can find wordlists:
 * Added '--loopback' to rule based cracking
 * Extended brute force digits from 8 to 10
 
+### v0.8 - Combinator
+
+* Added combination attack support
+* Reduced information directly in the menu moved to separate overview
+* Added simple information about the options
+
 ## License
 
 MIT
