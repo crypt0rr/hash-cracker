@@ -56,6 +56,11 @@ Some sites where you can find wordlists:
 * Reduced information directly in the menu moved to separate overview
 * Added simple information about the options
 
+### v0.9 - Light and heavy lifting
+
+* Made light and heavy rules separate job
+* Added fordyv1.rule
+
 ## License
 
 MIT

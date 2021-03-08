@@ -8,6 +8,7 @@ digits1="rules/digits1.rule"
 digits2="rules/digits2.rule"
 digits3="rules/digits3.rule"
 dive="rules/dive.rule"
+fordyv1="rules/fordyv1.rule" # Credits to Fordy
 generated2="rules/generated2.rule"
 hob064="rules/hob064.rule"
 leetspeak="rules/leetspeak.rule"
@@ -16,8 +17,9 @@ pantag="rules/pantagrule.popular.rule"
 williamsuper="rules/williamsuper.rule"
 toggles1="rules/toggles1.rule"
 toggles2="rules/toggles2.rule"
-RULELIST=($ORTRTA $d3ad0ne $d3adhob0 $generated2 $digits1 $digits2 $digits3 $dive $hob064 $leetspeak $pantag $williamsuper $toggles1 $toggles2)
-SMALLRULELIST=($digits1 $digits2 $hob064 $leetspeak)
+RULELIST_LIGHT=($ORTRTA $d3ad0ne $d3adhob0 $generated2 $digits1 $digits2 $hob064 $leetspeak $toggles1 $toggles2)
+RULELIST_HEAVY=($fordyv1 $pantag $williamsuper $digits3 $dive)
+RULELIST_SMALL=($digits1 $digits2 $hob064 $leetspeak)
 
 function requirement_checker () {
     if ! [ -x "$(command -v $HASHCAT)" ]; then
@@ -70,13 +72,22 @@ function selector_wordlist () {
     fi
 }
 
-function default_processing () {
+function default_processing_light () {
     $HASHCAT -O  --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST
-    for RULE in ${RULELIST[*]}; do
+    for RULE in ${RULELIST_LIGHT[*]}; do
         $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST -r $RULE --loopback
     done
-    echo -e "\n\e[32mDefault processing done\e[0m\n"; main
+    echo -e "\n\e[32mDefault processing with light rules done\e[0m\n"; main
 }
+
+function default_processing_heavy () {
+    $HASHCAT -O  --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST
+    for RULE in ${RULELIST_HEAVY[*]}; do
+        $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST -r $RULE --loopback
+    done
+    echo -e "\n\e[32mDefault processing with heavy rules done\e[0m\n"; main
+}
+
 
 function bruteforce_processing () {
     $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?a?a?a?a?a' --increment
@@ -111,7 +122,7 @@ function hybrid_processing () {
 }
 
 function toggle_processing () {
-    for RULE in ${SMALLRULELIST[*]}; do
+    for RULE in ${RULELIST_SMALL[*]}; do
         $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST -r $toggles1 -r $RULE --loopback
         $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST $WORDLIST -r $toggles2 -r $RULE --loopback
     done
@@ -160,42 +171,45 @@ function results_processing () {
 }
 
 function main () {
-    echo -e "Hash-cracker v0.8 by crypt0rr\n"
+    echo -e "Hash-cracker v0.9 by crypt0rr\n"
     echo "Checking if requirements are met:"
     requirement_checker
     
     echo -e "\n0. Exit"
-    echo "1. Default"
-    echo "2. Brute force"
-    echo "3. Iterate results"
-    echo "4. Plain"
-    echo "5. Hybrid"
-    echo "6. Toggle-case"
-    echo "7. Combinator"
-    echo "8. Prefix suffix (advise: first run steps above)"
-    echo "9. Common substring (advise: first run steps above)"
+    echo "1. Default light rules"
+    echo "2. Default heavy rules"
+    echo "3. Brute force"
+    echo "4. Iterate results"
+    echo "5. Plain"
+    echo "6. Hybrid"
+    echo "7. Toggle-case"
+    echo "8. Combinator"
+    echo "9. Prefix suffix (advise: first run steps above)"
+    echo "10. Common substring (advise: first run steps above)"
     echo "99. Show info about modules"
     echo "100. Show results in usable format"
     read -p "Please enter number: " START
     if [[ $START = '0' ]]; then
         echo "Bye..."; exit 1
     elif [[ $START = '1' ]]; then
-        selector_hashtype; selector_hashlist; selector_wordlist; default_processing
+        selector_hashtype; selector_hashlist; selector_wordlist; default_processing_light
     elif [[ $START = '2' ]]; then
-        selector_hashtype; selector_hashlist; bruteforce_processing
+        selector_hashtype; selector_hashlist; selector_wordlist; default_processing_heavy
     elif [[ $START = '3' ]]; then
-        selector_hashtype; selector_hashlist; iterate_processing
+        selector_hashtype; selector_hashlist; bruteforce_processing
     elif [[ $START = '4' ]]; then
-        selector_hashtype; selector_hashlist; selector_wordlist; plain_processing
+        selector_hashtype; selector_hashlist; iterate_processing
     elif [[ $START = '5' ]]; then
-        selector_hashtype; selector_hashlist; selector_wordlist; hybrid_processing
+        selector_hashtype; selector_hashlist; selector_wordlist; plain_processing
     elif [[ $START = '6' ]]; then
-        selector_hashtype; selector_hashlist; selector_wordlist; toggle_processing
+        selector_hashtype; selector_hashlist; selector_wordlist; hybrid_processing
     elif [[ $START = '7' ]]; then
-        selector_hashtype; selector_hashlist; selector_wordlist; combinator_processing
+        selector_hashtype; selector_hashlist; selector_wordlist; toggle_processing
     elif [[ $START = '8' ]]; then
-        selector_hashtype; selector_hashlist; prefixsuffix_processing
+        selector_hashtype; selector_hashlist; selector_wordlist; combinator_processing
     elif [[ $START = '9' ]]; then
+        selector_hashtype; selector_hashlist; prefixsuffix_processing
+    elif [[ $START = '10' ]]; then
         selector_hashtype; selector_hashlist; substring_processing
     elif [[ $START = '99' ]]; then
         show_info    
