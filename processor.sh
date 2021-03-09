@@ -88,7 +88,6 @@ function default_processing_heavy () {
     echo -e "\n\e[32mDefault processing with heavy rules done\e[0m\n"; main
 }
 
-
 function bruteforce_processing () {
     $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?a?a?a?a?a' --increment
     $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST -a3 '?l?l?l?l?l?l?l?l' --increment
@@ -101,7 +100,7 @@ function bruteforce_processing () {
 }
 
 function iterate_processing () {
-    for RULE in ${RULELIST[*]}; do
+    for RULE in ${RULELIST_HEAVY[*]}; do
         $HASHCAT -O -m$HASHTYPE $HASHLIST --show > tmp_output && cat tmp_output | cut -d ':' -f2 | sort -u | tee tmp_pwonly &>/dev/null; rm tmp_output
         $HASHCAT -O --bitmap-max=24 -m$HASHTYPE $HASHLIST tmp_pwonly -r $RULE --loopback
     done
