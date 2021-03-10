@@ -7,6 +7,8 @@ Some sites where you can find wordlists:
 * <https://hashes.org/>
 * <https://weakpass.com/>
 
+Want to make the ***$HEX[1234]*** Hashcat output readable? Have a look at [hex-to-readable](https://github.com/crypt0rr/hex-to-readable).
+
 ## Version log
 
 ### v0.1 - Initial release
